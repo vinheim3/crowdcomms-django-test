@@ -1,3 +1,4 @@
+from .models import UserVisit
 
 
 class UserVisitMiddleware:
@@ -6,5 +7,7 @@ class UserVisitMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        UserVisit.visited(request.user)
+
         response = self.get_response(request)
         return response

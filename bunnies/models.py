@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 
+from rest_framework.exceptions import ValidationError
+
 # Create your models here.
 
 
@@ -19,3 +21,11 @@ class Bunny(models.Model):
     '''
     name = models.CharField(max_length=64)
     home = models.ForeignKey(RabbitHole, on_delete=models.CASCADE, related_name='bunnies')
+
+    def save(self, *args, **kwargs):
+        # Can't save the bunny if the home we try to put it in, has reached
+        # its bunny limit
+        home = self.home
+        if home.bunnies.count() >= home.bunnies_limit:
+            raise ValidationError("Hole filled")
+        return super().save(*args, **kwargs)
